@@ -1,0 +1,167 @@
+From 3a450e169f6e6161c698a008456fff25dd197304 Mon Sep 17 00:00:00 2001
+From: Su Yue <glass@fydeos.io>
+Date: Mon, 15 May 2023 10:59:40 +0800
+Subject: [PATCH 2/2] rockchip/overlay: add khadas edge2 overlays
+
+Signed-off-by: Su Yue <glass@fydeos.io>
+Change-Id: I564ba7774264d47c808d115803682c06f8dff49f
+---
+ arch/arm64/boot/dts/rockchip/Makefile         |  2 ++
+ arch/arm64/boot/dts/rockchip/overlay/Makefile | 15 ++++++++++++
+ .../rockchip/overlay/README.rockchip-overlays |  1 +
+ .../dts/rockchip/overlay/edge2-io-pwm.dts     | 12 ++++++++++
+ .../dts/rockchip/overlay/edge2-io-spi.dts     | 23 +++++++++++++++++++
+ .../dts/rockchip/overlay/edge2-io-uart.dts    | 12 ++++++++++
+ .../boot/dts/rockchip/overlay/mipi-panel.dts  | 12 ++++++++++
+ .../rockchip/overlay/rk3588s-khadas-edge2.dts | 12 ++++++++++
+ 8 files changed, 89 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/Makefile
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/README.rockchip-overlays
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/edge2-io-pwm.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/edge2-io-spi.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/edge2-io-uart.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/mipi-panel.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/overlay/rk3588s-khadas-edge2.dts
+
+diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
+index 2a47c43ab227..b7f6cd38820b 100644
+--- a/arch/arm64/boot/dts/rockchip/Makefile
++++ b/arch/arm64/boot/dts/rockchip/Makefile
+@@ -1,2 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-khadas-edge2.dtb
++
++subdir-y := $(dts-dirs) overlay
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/Makefile b/arch/arm64/boot/dts/rockchip/overlay/Makefile
+new file mode 100644
+index 000000000000..e8e937be1154
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/Makefile
+@@ -0,0 +1,15 @@
++# SPDX-License-Identifier: GPL-2.0
++dtbo-$(CONFIG_ARCH_ROCKCHIP) += \
++		edge2-io-pwm.dtbo \
++		edge2-io-spi.dtbo \
++		edge2-io-uart.dtbo \
++		mipi-panel.dtbo
++
++dtbotxt-$(CONFIG_ARCH_ROCKCHIP) += \
++	README.rockchip-overlays
++
++targets += $(dtbo-y) $(dtbotxt-y)
++
++always-y		:= $(dtbo-y) $(dtbotxt-y)
++clean-files		:= *.dtbo
++
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/README.rockchip-overlays b/arch/arm64/boot/dts/rockchip/overlay/README.rockchip-overlays
+new file mode 100644
+index 000000000000..491c78cb7add
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/README.rockchip-overlays
+@@ -0,0 +1 @@
++## Introduction
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/edge2-io-pwm.dts b/arch/arm64/boot/dts/rockchip/overlay/edge2-io-pwm.dts
+new file mode 100644
+index 000000000000..3bd06d147825
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/edge2-io-pwm.dts
+@@ -0,0 +1,12 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&pwm14>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/edge2-io-spi.dts b/arch/arm64/boot/dts/rockchip/overlay/edge2-io-spi.dts
+new file mode 100644
+index 000000000000..5da6b7f1ae1b
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/edge2-io-spi.dts
+@@ -0,0 +1,23 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&spi1>;
++
++		__overlay__ {
++			status = "okay";
++
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			spidev@0 {
++				status = "okay";
++				compatible = "linux,spidev";
++				/* spi default max clock 100Mhz */
++				spi-max-frequency = <100000000>;
++				reg = <0>;
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/edge2-io-uart.dts b/arch/arm64/boot/dts/rockchip/overlay/edge2-io-uart.dts
+new file mode 100644
+index 000000000000..6a35c3487cc3
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/edge2-io-uart.dts
+@@ -0,0 +1,12 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&uart7>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/mipi-panel.dts b/arch/arm64/boot/dts/rockchip/overlay/mipi-panel.dts
+new file mode 100644
+index 000000000000..bbd57802e47e
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/mipi-panel.dts
+@@ -0,0 +1,12 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&dsi0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/overlay/rk3588s-khadas-edge2.dts b/arch/arm64/boot/dts/rockchip/overlay/rk3588s-khadas-edge2.dts
+new file mode 100644
+index 000000000000..bbd57802e47e
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/overlay/rk3588s-khadas-edge2.dts
+@@ -0,0 +1,12 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	fragment@0 {
++		target = <&dsi0>;
++
++		__overlay__ {
++			status = "okay";
++		};
++	};
++};
+-- 
+2.40.1
+

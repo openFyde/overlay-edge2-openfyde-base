@@ -1,0 +1,85 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-khadas-edge2.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s-khadas-edge2.dtsi
+index da7c6884e88b..8c95d4b4ff2a 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-khadas-edge2.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-khadas-edge2.dtsi
+@@ -69,7 +69,7 @@ backlight_mipi0: backlight-mipi0 {
+ 	dp0_sound: dp0-sound {
+ 		status = "disabled";
+ 		compatible = "rockchip,hdmi";
+-		rockchip,card-name= "rockchip,dp0";
++		rockchip,card-name= "TYPEC-HDMI";
+ 		rockchip,mclk-fs = <512>;
+ 		rockchip,cpu = <&spdif_tx2>;
+ 		rockchip,codec = <&dp0 1>;
+@@ -115,21 +115,14 @@ backlight_mipi1: backlight-mipi1 {
+         default-brightness-level = <200>;
+     };
+ 
+-
+-
+ 	hdmi0_sound: hdmi0-sound {
+-		status = "disabled";
+-		compatible = "simple-audio-card";
+-		simple-audio-card,format = "i2s";
+-		simple-audio-card,mclk-fs = <128>;
+-		simple-audio-card,name = "rockchip,hdmi0";
+-
+-		simple-audio-card,cpu {
+-			sound-dai = <&i2s5_8ch>;
+-		};
+-		simple-audio-card,codec {
+-			sound-dai = <&hdmi0>;
+-		};
++        status = "disabled";
++		compatible = "rockchip,hdmi";
++		rockchip,mclk-fs = <128>;
++		rockchip,card-name = "rockchip-HDMI";
++		rockchip,cpu = <&i2s5_8ch>;
++		rockchip,codec = <&hdmi0>;
++		rockchip,jack-det;
+ 	};
+ 
+ 	spdif_tx1_dc: spdif-tx1-dc {
+diff --git a/sound/soc/rockchip/rockchip_hdmi.c b/sound/soc/rockchip/rockchip_hdmi.c
+index f7d721272267..27776ad8b8f0 100644
+--- a/sound/soc/rockchip/rockchip_hdmi.c
++++ b/sound/soc/rockchip/rockchip_hdmi.c
+@@ -21,6 +21,7 @@
+ #define DRV_NAME "rk-hdmi-sound"
+ #define MAX_CODECS	2
+ #define DEFAULT_MCLK_FS	256
++#define CROS_HDMI "HDMI/DP"
+ 
+ struct rk_hdmi_data {
+ 	struct snd_soc_card	card;
+@@ -29,6 +30,7 @@ struct rk_hdmi_data {
+ 	struct snd_soc_jack_pin	hdmi_jack_pin;
+ 	unsigned int		mclk_fs;
+ 	bool			jack_det;
++	char*			jack_name;
+ };
+ 
+ static int rk_hdmi_fill_widget_info(struct device *dev,
+@@ -204,6 +206,13 @@ static int rk_hdmi_probe(struct platform_device *pdev)
+ 	ret = snd_soc_of_parse_card_name(&rk_data->card, "rockchip,card-name");
+ 	if (ret < 0)
+ 		return ret;
++
++	count = strlen(CROS_HDMI) + 1;
++	rk_data->jack_name = devm_kzalloc(&pdev->dev, count, GFP_KERNEL);
++	if (rk_data->jack_name == NULL)
++		return -ENOMEM;
++	strncpy(rk_data->jack_name, CROS_HDMI, count);
++
+ 	rk_data->dai.name = rk_data->card.name;
+ 	rk_data->dai.stream_name = rk_data->card.name;
+ 	count = of_count_phandle_with_args(np, "rockchip,codec", "#sound-dai-cells");
+@@ -263,7 +272,7 @@ static int rk_hdmi_probe(struct platform_device *pdev)
+ 	rk_data->dai.platforms->of_node = cpu_np;
+ 	of_node_put(cpu_np);
+ 
+-	rk_data->hdmi_jack_pin.pin = rk_data->card.name;
++	rk_data->hdmi_jack_pin.pin = rk_data->jack_name;
+ 	rk_data->hdmi_jack_pin.mask = SND_JACK_LINEOUT;
+ 	rk_data->card.num_links = 1;
+ 	rk_data->card.owner = THIS_MODULE;
