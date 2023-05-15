@@ -29,4 +29,7 @@ src_install() {
     default
     insinto "/etc/init"
     doins ${FILESDIR}/*.conf
+
+   exeinto "/usr/sbin"
+   doexe ${FILESDIR}/scripts/*
 }
