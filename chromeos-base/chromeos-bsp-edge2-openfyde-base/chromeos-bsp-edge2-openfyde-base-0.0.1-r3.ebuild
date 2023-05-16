@@ -14,12 +14,10 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="
-    chromeos-base/edge2-firmware
+    chromeos-base/armbian-firmware
     sys-boot/edge2-loaders
     chromeos-base/os_install_service
 "
-
-#    app-misc/fan-control-rock5b
 
 DEPEND="${RDEPEND}"
 
