@@ -26,7 +26,8 @@ DEPEND="${RDEPEND}"
 S="${WORKDIR}"
 
 src_install() {
-    default
+    #brcm bluetooth
+    dosym "/lib/firmware" "/etc/firmware"
     insinto "/etc/init"
     doins ${FILESDIR}/*.conf
 
