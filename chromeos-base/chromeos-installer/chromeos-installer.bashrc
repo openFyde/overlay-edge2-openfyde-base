@@ -9,6 +9,6 @@ cros_post_src_install_edge2_openfyde_flash_spi() {
 }
 
 cros_pre_src_prepare_edge2_openfyde_patches() {
-  epatch ${EDGE2_OPENFYDE_BASE_BASHRC_FILEPATH}/install.patch
-  epatch ${EDGE2_OPENFYDE_BASE_BASHRC_FILEPATH}/postinst.patch
+  eapply -p2 ${EDGE2_OPENFYDE_BASE_BASHRC_FILEPATH}/install.patch
+  eapply -p2 ${EDGE2_OPENFYDE_BASE_BASHRC_FILEPATH}/postinst.patch
 }
