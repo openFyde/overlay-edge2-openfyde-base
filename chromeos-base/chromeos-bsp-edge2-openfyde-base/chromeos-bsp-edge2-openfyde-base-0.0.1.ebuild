@@ -14,7 +14,7 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="
-    chromeos-base/edge2-firmware
+    sys-kernel/armbian-firmware
     sys-boot/edge2-loaders
     chromeos-base/os_install_service
 "
@@ -24,7 +24,11 @@ DEPEND="${RDEPEND}"
 S="${WORKDIR}"
 
 src_install() {
+    #brcm bluetooth
     dosym "/lib/firmware" "/etc/firmware"
     insinto "/etc/init"
     doins ${FILESDIR}/*.conf
+
+   exeinto "/usr/sbin"
+   doexe ${FILESDIR}/scripts/*
 }
