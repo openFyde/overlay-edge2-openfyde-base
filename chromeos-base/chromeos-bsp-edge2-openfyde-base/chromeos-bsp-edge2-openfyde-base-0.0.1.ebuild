@@ -14,6 +14,7 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="
+    chromeos-base/edge2-firmware
     sys-boot/edge2-loaders
     chromeos-base/os_install_service
 "
