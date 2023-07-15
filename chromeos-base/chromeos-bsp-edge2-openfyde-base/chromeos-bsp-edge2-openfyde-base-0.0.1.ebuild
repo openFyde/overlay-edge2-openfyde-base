@@ -14,7 +14,6 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="
-    sys-kernel/armbian-firmware
     sys-boot/edge2-loaders
     chromeos-base/os_install_service
 "
